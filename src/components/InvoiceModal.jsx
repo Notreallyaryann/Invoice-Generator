@@ -6,7 +6,7 @@ import { jsPDF } from 'jspdf';
 const InvoiceModal = ({
   isOpen,
   setIsOpen,
-   invoiceInfo,
+  invoiceInfo,
   items,
   onAddNextInvoice,
 }) => {
@@ -24,7 +24,7 @@ const InvoiceModal = ({
     toPng(dom)
       .then((dataUrl) => {
         const img = new Image();
-        img.crossOrigin = 'annoymous';
+        img.crossOrigin = 'anonymous';
         img.src = dataUrl;
         img.onload = () => {
           // Initialize the PDF.
@@ -69,11 +69,21 @@ const InvoiceModal = ({
             // Add the page to the PDF.
             if (page) pdf.addPage();
 
-            const imgData = pageCanvas.toDataURL(`image/₹{imageType}`, 1);
+            const imgData = pageCanvas.toDataURL(`image/${imageType}`, 1);
             pdf.addImage(imgData, imageType, 0, 0, pdfWidth, pageHeight);
           }
+
+          // Include total and date in the PDF
+          const { invoiceNumber, date, total } = invoiceInfo;
+
+          // Add Invoice Number, Date, and Total to the PDF
+          pdf.setFontSize(12);
+          pdf.text(`Invoice Number: ${invoiceNumber}`, 14, 250); // Add invoice number
+          pdf.text(`Date: ${date}`, 14, 260);  // Add the date
+          pdf.text(`Total: ₹${total.toFixed(2)}`, 14, 270); // Add total value
+
           // Output / Save
-          pdf.save(`invoice-₹{invoiceInfo.invoiceNumber}.pdf`);
+          pdf.save(`invoice-${invoiceNumber}.pdf`);
         };
       })
       .catch((error) => {
